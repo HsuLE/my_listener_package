@@ -79,24 +79,6 @@ void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
     sc.DWrite1R(0, 88115, 10000); // acceleration ratio in 0.01%
 }
 
-//void scanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
-//{
-//  ROS_INFO("Received a /scan message with range data:");
-//  float min = 1000000;
-//  for (int i = 0; i < msg->ranges.size(); i++) {
-//    if(msg->ranges[i] > 0 && msg->ranges[i] < min)
-//        min = msg->ranges[i];
-//        
-//  }
-//  ROS_INFO("%d", msg->ranges.size());
-
-  //if(min>2)
-    //ROS_INFO("Min distance  =: %f", min);
-    // give /cmd_vel to robot
-  //else
-    //ROS_INFO("Min distance  =: %f < 2 !!!! cmd_vel = 0", min);
-//}
-
 int main(int argc, char** argv)
 {
   if(connectRobot())
@@ -108,12 +90,7 @@ int main(int argc, char** argv)
 
       // Subscribe to /cmd_vel topic
       ros::Subscriber cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 10, cmdVelCallback);
-
-      // Subscribe to /scan topic
-      //ros::Subscriber scan_sub = nh.subscribe<sensor_msgs::LaserScan>("/scan", 10, scanCallback);
-
       
-
       // Spin the node and process incoming messages
       ros::spin();
   }

@@ -116,12 +116,12 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
+  include/my_listener_package
   ${catkin_INCLUDE_DIRS}
 )
 
 add_executable(my_listener_node src/my_listener_node.cpp)
-target_link_libraries(my_listener_node ${catkin_LIBRARIES})
+target_link_libraries(my_listener_node ${catkin_LIBRARIES} ${DL_LIBRARY} dl)
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/my_listener_package.cpp
