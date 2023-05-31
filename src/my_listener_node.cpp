@@ -71,9 +71,7 @@ void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
     ROS_INFO("Received a /cmd_vel message with linear velocity %f and angular velocity %f", linear, angular);
 
-    linear = msg->linear.x; // m/s
-    angular = msg->angular.z; // rads/s
-
+    
     sc.MainProcess();
 		
 	//-------Reading internal status of Library
@@ -89,13 +87,15 @@ void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 		ROS_INFO("Connection Status Change to %d!\n", ConnStatus);
 		oConnStatus=ConnStatus;
 	}
+    
+    linear = msg->linear.x; // m/s
+    angular = msg->angular.z; // rads/s
 
     sc.DWrite1R(0, 88112, 1); //manual mode
-    sc.DWrite1R(0, 63609, linear*1000*60); // linear.v (mm/Min)    
-	sc.DWrite1R(0, 88114, 10000); // acceleration ratio in 0.01%
-	sc.DWrite1R(0, 63610, angular*57.2957795*60);   // omega(Deg/Min)
-    //sc.DWrite1R(0, 63610, angular*60);
-    sc.DWrite1R(0, 88115, 10000); // acceleration ratio in 0.01%
+    sc.DWrite1R(0, 63613, 6000); // linear.v (mm/Min)    
+	sc.DWrite1R(0, 88113, linear*10000); // acceleration ratio in 0.01%
+	sc.DWrite1R(0, 63615, 600);   // omega(Deg/Min)
+    sc.DWrite1R(0, 88115, angular*5.72957795*10000); // acceleration ratio in 0.01%
 }
 
 int main(int argc, char** argv)
