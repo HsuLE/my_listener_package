@@ -15,6 +15,7 @@ DLL_USE_SETTING DllSetting;
 float linear = 0;
 float angular = 0;
 float d = 0;
+int oConnStatus=0;
 
 int connectRobot()
 {
@@ -51,6 +52,7 @@ int connectRobot()
 		printf("Connection Setting Failed!\n");
 		return 0;
 	}
+    printf("%d",ok);
 
 
 	//-----設定要持續讀取的資料
@@ -72,10 +74,27 @@ void cmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
     linear = msg->linear.x; // m/s
     angular = msg->angular.z; // rads/s
 
+    sc.MainProcess();
+		
+	//-------Reading internal status of Library
+	int ProcCounter = sc.GetLibraryMsg(SCIF_PROC_COUNTER);             //library counter: add 1 every second --> to make sure library running
+	int LoopCounter = sc.GetConnectionMsg(0, SCIF_LOOP_COUNT);              //polling cycle time --> to know how fast the speed is
+	int LoopNum = sc.GetConnectionMsg(0, SCIF_LOOP_QUEUE_PKG_COUNT);        //polling package count --> to make sure setting is correct
+	int DirectNum = sc.GetConnectionMsg(0, SCIF_DIRECT_QUEUE_PKG_COUNT);    //direct package count not executed.
+
+	//------Read connect status, "3" means connection OK
+	int ConnStatus = sc.GetConnectionMsg(0, SCIF_CONNECT_STATE);
+	if (ConnStatus!=oConnStatus)
+	{
+		ROS_INFO("Connection Status Change to %d!\n", ConnStatus);
+		oConnStatus=ConnStatus;
+	}
+
     sc.DWrite1R(0, 88112, 1); //manual mode
     sc.DWrite1R(0, 63609, linear*1000*60); // linear.v (mm/Min)    
 	sc.DWrite1R(0, 88114, 10000); // acceleration ratio in 0.01%
-	sc.DWrite1R(0, 63610, angular*57.2957795);   // omega(Deg/Min)
+	sc.DWrite1R(0, 63610, angular*57.2957795*60);   // omega(Deg/Min)
+    //sc.DWrite1R(0, 63610, angular*60);
     sc.DWrite1R(0, 88115, 10000); // acceleration ratio in 0.01%
 }
 
